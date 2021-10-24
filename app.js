@@ -70,8 +70,10 @@ const modal = document.querySelector(".js-lightbox");
 const closeButton = document.querySelector(".lightbox__button");
 const galleryImage = document.querySelector(".gallery__image");
 const modalImage = document.querySelector(".lightbox__image");
+const lightbox = document.querySelector(".js-lightbox");
 
 // функция разметки
+
 function createItems(array) {
   return array
     .map((elem) => {
@@ -97,64 +99,34 @@ const markup = createItems(galleryItems);
 
 // встраивание разметки
 listGallery.insertAdjacentHTML("afterbegin", markup);
+listGallery.addEventListener("click", openModalImg);
 
 //открытие модального окна
-function openModalImg(element) {
-  element.classList.add("is-open");
-}
-let currentIndex = 0;
-listGallery.addEventListener("click", (e) => {
+function openModalImg(e) {
   e.preventDefault();
-  const condition = e.target.nodeName === "IMG";
-
-  if (condition) {
-    openModalImg(modal);
-    modalImage.src = e.target.dataset.source;
-    modalImage.alt = e.target.alt;
-
-    // слушатель кнопки Esc
-    window.addEventListener("keydown", closeModalByKeydown);
-    function closeModalByKeydown(e) {
-      if (e.code === "Escape") {
-        closeModalImg(modal);
-      }
-    }
-
-    // переход картинок с помощью стрелок <- ->
-    window.addEventListener(
-      "keydown",
-      _.throttle((event) => {
-        console.log(event.code);
-        if (event.code === "ArrowRight") {
-          currentIndex += 1;
-          if (currentIndex >= galleryItems.length) {
-            currentIndex = 0;
-          }
-        }
-
-        if (event.code === "ArrowLeft") {
-          currentIndex -= 1;
-          if (currentIndex < 0) {
-            currentIndex = galleryItems.length - 1;
-          }
-        }
-        modalImage.src = galleryItems[currentIndex].original;
-        modalImage.alt = galleryItems[currentIndex].description;
-      }, 100)
-    );
-  }
-});
+  if (e.target === e.currentTarget) return;
+  // console.log(e.target);
+  // console.log(e.currentTarget);
+  lightbox.classList.add("is-open");
+  modalImage.src = e.target.dataset.source;
+  modalImage.alt = e.target.alt;
+  window.addEventListener("keydown", onPressEsc);
+}
 
 // закрытие модального окна
-function closeModalImg(element) {
-  if (element.classList.remove("is-open")) {
-    modalImage.src = "";
-    modalImage.alt = "";
-    modal.removeEventListener("click", closeModalByClick);
-    window.removeEventListener("keydown", closeModalByKeydown);
+function closeModalImg() {
+  lightbox.classList.remove("is-open");
+  modalImage.src = "";
+  modalImage.alt = "";
+  // modal.removeEventListener("click", closeModalByClick);
+  window.removeEventListener("keydown", onPressEsc);
+}
+function onPressEsc(e) {
+  if (e.code === "Escape") {
+    console.log("Escape");
+    closeModalImg();
   }
 }
-
 // ----------------------
 modal.addEventListener("click", closeModalByClick);
 function closeModalByClick(e) {
@@ -165,3 +137,46 @@ function closeModalByClick(e) {
     closeModalImg(modal);
   }
 }
+// let currentIndex = 0;
+// listGallery.addEventListener("click", (e) => {
+//   e.preventDefault();
+//   const condition = e.target.nodeName === "IMG";
+
+//   if (condition) {
+//     openModalImg(modal);
+//     modalImage.src = e.target.dataset.source;
+//     modalImage.alt = e.target.alt;
+
+//     // слушатель кнопки Esc
+//     window.addEventListener("keydown", closeModalByKeydown);
+//     function closeModalByKeydown(e) {
+//       if (e.code === "Escape") {
+//         console.log("Escape");
+//         closeModalImg(modal);
+//       }
+//     }
+
+//     // переход картинок с помощью стрелок <- ->
+//     window.addEventListener(
+//       "keydown",
+//       _.throttle((event) => {
+//         // console.log(event.code);
+//         if (event.code === "ArrowRight") {
+//           currentIndex += 1;
+//           if (currentIndex >= galleryItems.length) {
+//             currentIndex = 0;
+//           }
+//         }
+
+//         if (event.code === "ArrowLeft") {
+//           currentIndex -= 1;
+//           if (currentIndex < 0) {
+//             currentIndex = galleryItems.length - 1;
+//           }
+//         }
+//         modalImage.src = galleryItems[currentIndex].original;
+//         modalImage.alt = galleryItems[currentIndex].description;
+//       }, 100)
+//     );
+//   }
+// });
